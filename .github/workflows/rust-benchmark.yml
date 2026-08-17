@@ -65,6 +65,7 @@ jobs:
       - name: Measure optimized implementation
         run: |
           set -o pipefail
+          touch rust/lance-index/src/vector/kmeans.rs rust/lance-index/benches/kmeans_recompute.rs
           cargo bench -p lance-index --bench kmeans_recompute -- --baseline before 2>&1 | tee optimized-benchmark.txt
 
       - name: Upload Criterion evidence
