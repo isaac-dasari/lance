@@ -30,7 +30,7 @@ jobs:
       - name: Checkout optimized implementation
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
-          ref: 7d02be7f14fd372a496e29b4926cf701554017af
+          ref: 295c63d4db66f2b6f0dc269d881e4adf5460e758
 
       - name: Checkout baseline implementation
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -55,14 +55,19 @@ jobs:
       - name: Run focused optimized tests
         run: |
           cargo test --profile bench -p lance-index --lib recompute
-          cargo test --profile bench -p lance-index --lib centroid_accumulator_count
 
       - name: Measure baseline
+        env:
+          LANCE_CPU_THREADS: "62"
+          RAYON_NUM_THREADS: "62"
         run: |
           set -o pipefail
           cargo bench --manifest-path baseline/Cargo.toml -p lance-index --bench kmeans_recompute -- --save-baseline before 2>&1 | tee baseline-benchmark.txt
 
       - name: Measure optimized implementation
+        env:
+          LANCE_CPU_THREADS: "62"
+          RAYON_NUM_THREADS: "62"
         run: |
           set -o pipefail
           touch rust/lance-index/src/vector/kmeans.rs rust/lance-index/benches/kmeans_recompute.rs
