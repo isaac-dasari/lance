@@ -1,0 +1,32 @@
+name: Materialize PR 8560 row-index tree
+
+on:
+  push:
+    branches:
+      - tmp/pr8560-materialize-row-index
+    paths:
+      - .pr8560/row-index.patch
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: tmp/pr8560-materialize-row-index
+          fetch-depth: 0
+      - name: Apply verified patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply --check .pr8560/row-index.patch
+          git apply .pr8560/row-index.patch
+          git rm .pr8560/row-index.patch .github/workflows/pr8560-materialize.yml
+          git add -- rust/lance-index/src/vector/kmeans.rs rust/lance-index/benches/kmeans_recompute.rs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: materialize PR 8560 target tree"
+          git push origin HEAD:tmp/pr8560-materialize-row-index
