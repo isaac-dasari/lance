@@ -5,7 +5,7 @@ on:
     branches:
       - tmp/pr8560-merge-main-20260822
     paths:
-      - .pr8560/merge-main.patch
+      - .github/workflows/pr8560-merge-main-materialize.yml
 
 permissions:
   contents: write
@@ -26,8 +26,9 @@ jobs:
           test "$actual" = "$expected"
           git apply --check .pr8560/merge-main.patch
           git apply .pr8560/merge-main.patch
-          git rm .pr8560/merge-main.patch .github/workflows/pr8560-merge-main-materialize.yml
-          git add -- .github/workflows/rust-benchmark.yml rust/lance-index/Cargo.toml rust/lance-index/benches/kmeans_recompute.rs rust/lance-index/src/vector/kmeans.rs
+          git checkout -- .github/workflows/rust-benchmark.yml
+          git rm .pr8560/merge-main.patch
+          git add -- rust/lance-index/Cargo.toml rust/lance-index/benches/kmeans_recompute.rs rust/lance-index/src/vector/kmeans.rs
           git config user.name 'isaac-dasari'
           git config user.email '74317395+isaac-dasari@users.noreply.github.com'
           git commit -m 'materialize PR 8560 merge resolution'
