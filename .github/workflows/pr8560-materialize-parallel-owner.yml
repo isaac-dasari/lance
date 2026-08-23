@@ -1,0 +1,30 @@
+name: PR8560 materialize parallel owner
+
+on:
+  push:
+    branches:
+      - tmp/pr8560-parallel-owner-publish-20260823
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply exact patch
+        run: |
+          git apply --check .github/pr8560-parallel-owner.patch
+          git apply .github/pr8560-parallel-owner.patch
+          git rm .github/pr8560-parallel-owner.patch
+          git rm .github/workflows/pr8560-materialize-parallel-owner.yml
+          git add rust/lance-index/src/vector/kmeans.rs
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'perf(index): parallelize kmeans owner indexing'
+          git push origin HEAD
